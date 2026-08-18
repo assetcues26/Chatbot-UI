@@ -14,6 +14,13 @@ import TasksPage from "./pages/TasksPage";
 import TeamsPage from "./pages/TeamsPage";
 import { getToken } from "./lib/storage";
 
+const API_DOCS = "https://chatbot-backend-h6oj.onrender.com/docs";
+
+function ApiDocsRedirect() {
+  window.location.replace(API_DOCS);
+  return null;
+}
+
 function BootScreen() {
   return (
     <div className="grid h-screen place-items-center text-white">
@@ -65,6 +72,7 @@ export default function App() {
           )
         }
       />
+      <Route path="/docs" element={<ApiDocsRedirect />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route
         path="/signup"

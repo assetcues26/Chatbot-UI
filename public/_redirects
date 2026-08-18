@@ -1,1 +1,5 @@
+/docs    https://chatbot-backend-h6oj.onrender.com/docs    200
+/docs/*  https://chatbot-backend-h6oj.onrender.com/docs/:splat    200
+/redoc   https://chatbot-backend-h6oj.onrender.com/redoc    200
+/openapi.json    https://chatbot-backend-h6oj.onrender.com/openapi.json    200
 /*    /index.html   200

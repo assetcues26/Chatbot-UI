@@ -6,7 +6,32 @@
   NODE_VERSION = "20"
   VITE_API_URL = "https://chatbot-backend-h6oj.onrender.com"
 
-# SPA fallback. /api is served by the Render backend via VITE_API_URL.
+# FastAPI Swagger / OpenAPI on the Netlify host.
+[[redirects]]
+  from = "/docs"
+  to = "https://chatbot-backend-h6oj.onrender.com/docs"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/docs/*"
+  to = "https://chatbot-backend-h6oj.onrender.com/docs/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/redoc"
+  to = "https://chatbot-backend-h6oj.onrender.com/redoc"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/openapi.json"
+  to = "https://chatbot-backend-h6oj.onrender.com/openapi.json"
+  status = 200
+  force = true
+
+# SPA fallback. Chat/API calls go to Render via VITE_API_URL.
 [[redirects]]
   from = "/*"
   to = "/index.html"

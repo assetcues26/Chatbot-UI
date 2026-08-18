@@ -21,6 +21,18 @@ export default defineConfig({
         timeout: 600000,
         proxyTimeout: 600000,
       },
+      "/docs": {
+        target: "https://chatbot-backend-h6oj.onrender.com",
+        changeOrigin: true,
+      },
+      "/redoc": {
+        target: "https://chatbot-backend-h6oj.onrender.com",
+        changeOrigin: true,
+      },
+      "/openapi.json": {
+        target: "https://chatbot-backend-h6oj.onrender.com",
+        changeOrigin: true,
+      },
     },
   },
 });
