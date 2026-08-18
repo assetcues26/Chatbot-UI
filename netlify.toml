@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback. /api is served by the Render backend via VITE_API_URL.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
