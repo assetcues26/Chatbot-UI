@@ -57,6 +57,14 @@ function RequirePortalAccess({ children }: { children: React.ReactNode }) {
 export default function App() {
   const { ready, supabaseSession, fastApiUser, connected, signOut, refreshHealth } = useAuth();
 
+  if (typeof window !== "undefined") {
+    const { hash, pathname } = window.location;
+    if (hash.includes("access_token") && pathname !== "/auth/callback") {
+      window.location.replace(`/auth/callback${hash}`);
+      return <BootScreen />;
+    }
+  }
+
   if (!ready) return <BootScreen />;
 
   return (

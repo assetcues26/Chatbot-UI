@@ -6,7 +6,13 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 export const supabaseConfigured = Boolean(url && anonKey && !url.includes("xxxx"));
 
 export const supabase: SupabaseClient = supabaseConfigured
-  ? createClient(url!, anonKey!)
+  ? createClient(url!, anonKey!, {
+      auth: {
+        flowType: "pkce",
+        detectSessionInUrl: true,
+        persistSession: true,
+      },
+    })
   : (null as unknown as SupabaseClient);
 
 export function requireSupabase(): SupabaseClient {

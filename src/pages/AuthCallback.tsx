@@ -17,13 +17,18 @@ export default function AuthCallback() {
 
     async function run() {
       const sb = requireSupabase();
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
       let session = (await sb.auth.getSession()).data.session;
-      if (!session) {
-        await new Promise((r) => setTimeout(r, 600));
-        session = (await sb.auth.getSession()).data.session;
+      if (!session && code) {
+        const { data, error: exchangeError } = await sb.auth.exchangeCodeForSession(code);
+        if (exchangeError) throw exchangeError;
+        session = data.session;
       }
+
       if (!session?.user) {
-        navigate("/login", { replace: true });
+        setError("Could not complete sign in. No session was found.");
         return;
       }
 
