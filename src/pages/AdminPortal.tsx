@@ -138,14 +138,29 @@ export default function AdminPortal({
     return () => clearInterval(t);
   }, [load]);
 
-  async function ingest() {
+  async function ingest(kind: "acmetech" | "docs") {
     setIngestMsg(null);
     try {
-      const r = await api.ingestAcmetech();
-      setIngestMsg(`Imported ${r.imported}, ready ${r.ready}`);
+      const r = kind === "docs" ? await api.ingestDocs() : await api.ingestAcmetech();
+      const where = r.path ? ` from ${r.path}` : "";
+      setIngestMsg(`Imported ${r.imported}, ready ${r.ready}${where}`);
       await load();
     } catch (e: any) {
-      setIngestMsg(e?.message || "Ingest failed — check ACMETECH_PATH in backend/.env");
+      setIngestMsg(e?.message || (kind === "docs" ? "Docs ingest failed" : "AcmeTech ingest failed"));
+    }
+  }
+
+  async function saveDocAcl(doc: DocumentInfo) {
+    setError(null);
+    try {
+      const updated = await api.updateDocumentAcl(doc.id, {
+        allowed_departments: doc.allowed_departments,
+        min_clearance: doc.min_clearance,
+        company_wide: doc.company_wide,
+      });
+      setDocs((rows) => rows.map((d) => (d.id === updated.id ? updated : d)));
+    } catch (e: any) {
+      setError(e?.message || "Could not update document ACL");
     }
   }
 
@@ -384,13 +399,30 @@ export default function AdminPortal({
                 <div className="flex flex-wrap items-center gap-2">
                   <Shield size={16} />
                   <span className="text-sm font-medium">Knowledge ingest</span>
-                  <button
-                    type="button"
-                    onClick={ingest}
-                    className="ml-auto rounded-xl bg-portal-invert px-3 py-1.5 text-xs font-semibold text-portal-invert-text"
-                  >
-                    Run ingest
-                  </button>
+                  <div className="ml-auto flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => ingest("docs")}
+                      className="rounded-xl border border-portal-border px-3 py-1.5 text-xs font-semibold text-portal-text hover:bg-portal-muted-bg"
+                    >
+                      Ingest docs
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => ingest("acmetech")}
+                      className="rounded-xl bg-portal-invert px-3 py-1.5 text-xs font-semibold text-portal-invert-text"
+                    >
+                      Ingest AcmeTech
+                    </button>
+                    <a
+                      href="/docs"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-xl border border-portal-border px-3 py-1.5 text-xs text-portal-muted hover:bg-portal-muted-bg"
+                    >
+                      API docs
+                    </a>
+                  </div>
                 </div>
                 {ingestMsg && <p className="mt-2 text-xs text-portal-muted">{ingestMsg}</p>}
               </section>
@@ -596,8 +628,8 @@ export default function AdminPortal({
           )}
 
           {view === "documents" && (
-            <div className="overflow-hidden rounded-2xl border border-portal-border">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto overflow-hidden rounded-2xl border border-portal-border">
+              <table className="w-full min-w-[720px] text-left text-xs">
                 <thead className="bg-portal-muted-bg text-portal-muted">
                   <tr>
                     <th className="px-3 py-2">Title</th>
@@ -607,6 +639,7 @@ export default function AdminPortal({
                     <th className="px-3 py-2">Wide</th>
                     <th className="px-3 py-2">Status</th>
                     <th className="px-3 py-2">Chunks</th>
+                    <th className="px-3 py-2" />
                   </tr>
                 </thead>
                 <tbody>
@@ -614,11 +647,68 @@ export default function AdminPortal({
                     <tr key={d.id} className="border-t border-portal-border">
                       <td className="px-3 py-2">{d.title}</td>
                       <td className="px-3 py-2">{d.department_folder}</td>
-                      <td className="px-3 py-2">{d.allowed_departments.join(", ") || "—"}</td>
-                      <td className="px-3 py-2">{d.min_clearance}</td>
-                      <td className="px-3 py-2">{d.company_wide ? "yes" : "—"}</td>
+                      <td className="px-3 py-2">
+                        <input
+                          value={d.allowed_departments.join(", ")}
+                          onChange={(e) =>
+                            setDocs((rows) =>
+                              rows.map((row) =>
+                                row.id === d.id
+                                  ? {
+                                      ...row,
+                                      allowed_departments: e.target.value
+                                        .split(",")
+                                        .map((s) => s.trim())
+                                        .filter(Boolean),
+                                    }
+                                  : row
+                              )
+                            )
+                          }
+                          className="w-40 rounded-lg border border-portal-border bg-portal-bg px-2 py-1 outline-none"
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <select
+                          value={d.min_clearance}
+                          onChange={(e) =>
+                            setDocs((rows) =>
+                              rows.map((row) =>
+                                row.id === d.id ? { ...row, min_clearance: Number(e.target.value) } : row
+                              )
+                            )
+                          }
+                          className="rounded-lg border border-portal-border bg-portal-bg px-2 py-1 outline-none"
+                        >
+                          <option value={1}>1</option>
+                          <option value={2}>2</option>
+                          <option value={3}>3</option>
+                        </select>
+                      </td>
+                      <td className="px-3 py-2">
+                        <input
+                          type="checkbox"
+                          checked={d.company_wide}
+                          onChange={(e) =>
+                            setDocs((rows) =>
+                              rows.map((row) =>
+                                row.id === d.id ? { ...row, company_wide: e.target.checked } : row
+                              )
+                            )
+                          }
+                        />
+                      </td>
                       <td className="px-3 py-2">{d.status}</td>
                       <td className="px-3 py-2">{d.chunk_count}</td>
+                      <td className="px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() => saveDocAcl(d)}
+                          className="rounded-lg border border-portal-border px-2 py-1 hover:bg-portal-muted-bg"
+                        >
+                          Save ACL
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -216,6 +216,12 @@ export const api = {
       headers: authHeaders(false),
     }).then((r) => handle<{ imported: number; ready: number }>(r)),
 
+  ingestDocs: () =>
+    apiFetch("/api/admin/ingest-docs", {
+      method: "POST",
+      headers: authHeaders(false),
+    }).then((r) => handle<{ path?: string; imported: number; ready: number }>(r)),
+
   adminAlerts: (unreadOnly = false) =>
     apiFetch(`/api/admin/alerts?unread_only=${unreadOnly}`, { headers: authHeaders(false) }).then((r) =>
       handle<AccessAlert[]>(r)
