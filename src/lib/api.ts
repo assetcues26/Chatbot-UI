@@ -32,8 +32,11 @@ function authHeaders(json = true): HeadersInit {
   return headers;
 }
 
-/** Empty in local Vite (proxy). On Netlify set VITE_API_URL to the Render backend origin. */
-const API_BASE = String(import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+/** Empty in local Vite unless set. Production defaults to the Render API. */
+const API_BASE = String(
+  import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? "https://chatbot-backend-h6oj.onrender.com" : "")
+).replace(/\/$/, "");
 
 function apiFetch(path: string, init?: RequestInit) {
   return fetch(`${API_BASE}${path}`, init);

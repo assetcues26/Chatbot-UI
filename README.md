@@ -13,19 +13,22 @@ React + Vite portal for AssetCues (chat, teams, tasks). Deploy this repo on **Ne
 
 | Variable | Value |
 |----------|--------|
-| `VITE_API_URL` | Render backend origin, e.g. `https://your-service.onrender.com` (no trailing slash) |
+| `VITE_API_URL` | `https://chatbot-backend-h6oj.onrender.com` (set in `netlify.toml` and `.env.production`) |
 | `VITE_SUPABASE_URL` | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon key |
 
 `VITE_*` values are baked in at **build** time. After changing them, trigger a new deploy.
 
-On the Render backend, add the Netlify site origin to `CORS_ORIGINS` (e.g. `https://your-site.netlify.app`).
+Site config is `netlify.toml` (what Netlify reads). `netlify.yml` is the same settings in YAML.
+
+On the Render backend, add the Netlify site origin to `CORS_ORIGINS` (e.g. `https://your-site.netlify.app`). Right now health only lists localhost origins.
 
 ## Local
 
 ```powershell
 copy .env.example .env
-# set VITE_SUPABASE_* ; leave VITE_API_URL empty (Vite proxies /api → localhost:8000)
+# set VITE_SUPABASE_*
+# VITE_API_URL already points at Render; clear it to use a local API on port 8000
 npm install
 npm run dev
 ```

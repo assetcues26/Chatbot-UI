@@ -1,7 +1,43 @@
+# dependencies
 node_modules/
+
+# build
 dist/
+dist-ssr/
+
+# env (keep examples; .env.production is the public Render API origin)
 .env
-.env.local
-.DS_Store
-*.tsbuildinfo
+.env.*
+!.env.example
+!.env.production
+
+# vite
 .vite/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# editor / OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# typescript
+*.tsbuildinfo
+
+# netlify CLI cache
+.netlify/
+
+# tests / coverage
+coverage/

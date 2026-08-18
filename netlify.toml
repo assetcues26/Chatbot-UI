@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  VITE_API_URL = "https://chatbot-backend-h6oj.onrender.com"
 
 # SPA fallback. /api is served by the Render backend via VITE_API_URL.
 [[redirects]]
