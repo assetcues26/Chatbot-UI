@@ -214,7 +214,7 @@ export const api = {
     apiFetch("/api/admin/ingest-acmetech", {
       method: "POST",
       headers: authHeaders(false),
-    }).then((r) => handle<{ imported: number; ready: number }>(r)),
+    }).then((r) => handle<{ path?: string; imported: number; ready: number }>(r)),
 
   ingestDocs: () =>
     apiFetch("/api/admin/ingest-docs", {
